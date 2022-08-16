@@ -1,0 +1,166 @@
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>动力金融网 - 专业的互联网金融信息服务平台</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/fund-guanli.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/cashbox-share.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/base.css}"/>
+    <script type="text/javascript" language="javascript" th:src="@{/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/trafficStatistics.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#myCash").attr("class", "on");
+
+            $(".selectBox").hover(function () {
+                $("ul", this).show();
+            }, function () {
+                $("ul", this).hide();
+            });
+            $(".selectBox li a").click(function () {
+                var selectName = $(this).text();
+                $(".select-selected h3").text(selectName);
+                $(".selectBox ul").hide();
+            });
+            $(".select-selected").hover(function () {
+                $(this).addClass('select-hover');
+            }, function () {
+                $(this).removeClass('select-hover');
+            });
+        })
+        $(document).ready(function () {
+            $("#overView").removeClass("on");
+            $("#myAccount").addClass("on");
+        });
+        $(document).ready(function () {
+            $("#touzijilu").addClass("on");
+        });
+    </script>
+</head>
+
+<body>
+<!--页头start-->
+<div id="header">
+    <div th:include="commons/header :: html"></div>
+</div>
+<!--页头end-->
+
+<!-- 二级导航栏start -->
+<div th:include="commons/subNav :: html"></div>
+<!-- 二级导航栏end -->
+
+<!--页中start-->
+<div class="mainBox">
+    <div class="homeWap">
+        <div class="fund-guanli clearfix">
+            <div class="left-nav">
+	            <div th:include="commons/leftNav :: html"></div>
+            </div>
+            <div class="right-body">
+                <div class="right-wap">
+                    <div class="deal-data">
+                        <span th:if="${session.user==null}">
+                            <span style="color: red">请先<a style="color: blue" id="toLogin">登录</a></span>
+                        </span>
+                        <span th:if="${session.user!=null}">
+                        <dl>
+                            <dt>
+                                <span class="deal-time">投资时间</span>
+                                <span class="deal-name">投资产品</span>
+                                <span class="deal-type" style="width:120px">投资状态</span>
+                                <span class="deal-money">投资金额(元)</span>
+                            </dt>
+                            <dd th:each="bidInfo:${pageInfo.list}">
+                                <div class="deal-time" th:text="${#dates.format(bidInfo.bidTime,'yyyy-MM-dd hh:mm:ss')}">2016-01-03 12:23:32</div>
+                                <div class="deal-name" th:text="${bidInfo.productName}">新手宝</div>
+                                <div class="deal-type" style="width:120px">
+                                    <!-- 判断投资状态是否为1，即成功 -->
+                                    <span th:if="${bidInfo.bidStatus==1}">
+                                    投资成功
+                                        </span>
+                                    <span th:if="${bidInfo.bidStatus!=1}">投资失败</span>
+                                </div>
+                                <div class="deal-money" th:text="${bidInfo.bidMoney}">100.0</div>
+                            </dd>
+                            <!--<dd>
+                                <div class="deal-time">2016-01-03 12:23:32</div>
+                                <div class="deal-name">新手宝</div>
+                                <div class="deal-type" style="width:120px">
+                                    &lt;!&ndash; 判断投资状态是否为1，即成功 &ndash;&gt;
+                                    投资成功
+                                </div>
+                                <div class="deal-money">100.0</div>
+                            </dd>
+                            <dd>
+                                <div class="deal-time">2016-01-03 12:23:32</div>
+                                <div class="deal-name">新手宝</div>
+                                <div class="deal-type" style="width:120px">
+                                    &lt;!&ndash; 判断投资状态是否为1，即成功 &ndash;&gt;
+                                    投资成功
+                                </div>
+                                <div class="deal-money">100.0</div>
+                            </dd>
+                            <dd>
+                                <div class="deal-time">2016-01-03 12:23:32</div>
+                                <div class="deal-name">新手宝</div>
+                                <div class="deal-type" style="width:120px">
+                                    &lt;!&ndash; 判断投资状态是否为1，即成功 &ndash;&gt;
+                                    投资成功
+                                </div>
+                                <div class="deal-money">100.0</div>
+                            </dd>
+                            <dd>
+                                <div class="deal-time">2016-01-03 12:23:32</div>
+                                <div class="deal-name">新手宝</div>
+                                <div class="deal-type" style="width:120px">
+                                    &lt;!&ndash; 判断投资状态是否为1，即成功 &ndash;&gt;
+                                    投资成功
+                                </div>
+                                <div class="deal-money">100.0</div>
+                            </dd>
+                            <dd>
+                                <div class="deal-time">2016-01-03 12:23:32</div>
+                                <div class="deal-name">新手宝</div>
+                                <div class="deal-type" style="width:120px">
+                                    &lt;!&ndash; 判断投资状态是否为1，即成功 &ndash;&gt;
+                                    投资成功
+                                </div>
+                                <div class="deal-money">100.0</div>
+                            </dd>-->
+                            &nbsp;&nbsp;
+
+                            <div class="touzi_fenye" style="width:100%;text-align:center;">
+                                 <span th:text="|共${pageInfo.totalSize}条${pageInfo.totalPage}页|"/>　当前为第<span th:text="${pageInfo.currentPage}"/>页　
+                                <a id="linkHomePage" th:href="@{/loan/myInvest/firstPage}">首页</a>
+                                <a id="linkPreviousPage"
+                                   th:href="@{/loan/myInvest/upPage}">上一页</a>
+                                <a id="linkNextPage"
+                                   th:href="@{/loan/myInvest/nextPage}">下一页 </a>
+                                <a id="linkLastPage"
+                                   th:href="@{/loan/myInvest/lastPage}">尾页</a>
+                            </div>
+
+                        </dl>
+                            </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--页中end-->
+
+<!--页脚start-->
+<div th:include="commons/footer :: html"></div>
+<!--页脚end-->
+</body>
+<script>
+    $(function (){
+        $("#toLogin").click(function (){
+            window.location.href = rootPath+"/loan/page/login?ReturnUrl="+window.location.href;
+        });
+    });
+</script>
+</html>

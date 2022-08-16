@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<dl>
+  <dt>我的账户</dt>
+  <dd id="chongzhi"><a onclick="toRecharge()" href="#">充值</a><span></span></dd>
+  <dd id="wodexinxi"><a th:href="@{/myAccount.jsp}">我的信息</a><span></span></dd>
+  <dd id="touzijilu"><a th:href="@{/loan/myInvest}">投资记录</a><span></span></dd>
+  <dd id="chongzhijilu"><a th:href="@{/loan/myRecharge}">充值记录</a><span></span></dd>
+  <dd id="shouyijilu"><a th:href="@{/loan/myIncome}">收益记录</a><span></span></dd>
+</dl>
+</html>
+<script>
+  function toRecharge(){
+    var ReturnUrl = window.location.href;
+    window.location.href=rootPath+"/loan/page/toRecharge?ReturnUrl="+ReturnUrl;
+  }
+</script>

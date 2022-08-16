@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div id="subNav" class="subNav">
+<div class="mainBox">
+    <ul>
+      <li><a id="overView" onclick="toCenter()" href="#" class="on">总览</a></li>
+      <li><a id="myAccount" onclick="toRecharge()" href="#">我的账户</a></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+</div>
+<script>
+    function toRecharge(){
+        var ReturnUrl = window.location.href;
+        window.location.href=rootPath+"/loan/page/toRecharge?ReturnUrl="+ReturnUrl;
+    }
+
+    function toCenter(){
+        window.location.href=rootPath+"/loan/myCenter";
+    }
+</script>
+</html>
