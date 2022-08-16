@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.money.mapper.BidInfoMapper" >
+  <resultMap id="BaseResultMap" type="entity.BidInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="loan_id" property="loanId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="bid_money" property="bidMoney" jdbcType="DOUBLE" />
+    <result column="bid_time" property="bidTime" jdbcType="TIMESTAMP" />
+    <result column="bid_status" property="bidStatus" jdbcType="INTEGER" />
+    <!--<association property="user" javaType="entity.User" autoMapping="true">-->
+      <result column="phone" property="phone"/>
+    <result column="product_name" property="productName"/>
+    <!--</association>-->
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, loan_id, uid, bid_money, bid_time, bid_status
+  </sql>
+  <!--//根据产品id查询投资信息-->
+  <select id="selectBidInfoByLoanId" resultMap="BaseResultMap">
+    select b.id, b.loan_id, b.uid, b.bid_money, b.bid_time, b.bid_status, u.phone
+    from b_bid_info b left join u_user u on b.uid = u.id
+    where loan_id=#{id}
+    <if test="start!=null and size!=null">
+      limit #{start},#{size}
+    </if>
+  </select>
+
+  <select id="selectBidInfoCountByLoanId" resultType="int">
+    select COUNT(1) from b_bid_info where loan_id=#{id}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_bid_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="entity.BidInfo" >
+    insert into b_bid_info (id, loan_id, uid, 
+      bid_money, bid_time, bid_status
+      )
+    values (#{id,jdbcType=INTEGER}, #{loanId,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{bidMoney,jdbcType=DOUBLE}, #{bidTime,jdbcType=TIMESTAMP}, #{bidStatus,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="entity.BidInfo" >
+    insert into b_bid_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="loanId != null" >
+        loan_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="bidMoney != null" >
+        bid_money,
+      </if>
+      <if test="bidTime != null" >
+        bid_time,
+      </if>
+      <if test="bidStatus != null" >
+        bid_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="bidMoney != null" >
+        #{bidMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="bidTime != null" >
+        #{bidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bidStatus != null" >
+        #{bidStatus,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="entity.BidInfo" >
+    update b_bid_info
+    <set >
+      <if test="loanId != null" >
+        loan_id = #{loanId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="bidMoney != null" >
+        bid_money = #{bidMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="bidTime != null" >
+        bid_time = #{bidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bidStatus != null" >
+        bid_status = #{bidStatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="entity.BidInfo" >
+    update b_bid_info
+    set loan_id = #{loanId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      bid_money = #{bidMoney,jdbcType=DOUBLE},
+      bid_time = #{bidTime,jdbcType=TIMESTAMP},
+      bid_status = #{bidStatus,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--累计成交额-->
+  <select id="selectBidMoneySum" resultType="double">
+    select sum(bid_money) from b_bid_info
+  </select>
+
+  <!--根据产品id查询投资记录-->
+  <select id="selectByLoanId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from b_bid_info where loan_id=#{loanId}
+  </select>
+
+  <!--投资排行-->
+  <select id="selectByLoanIds" resultMap="BaseResultMap">
+    select b.id, b.loan_id, b.uid, b.bid_money, b.bid_time, b.bid_status, u.phone from b_bid_info b left join u_user u on b.uid = u.id where loan_id in
+    <foreach item="id" index="index" collection="list" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </select>
+  <!--select b.id, b.loan_id, b.uid, b.bid_money, b.bid_time, b.bid_status, u.phone
+    from b_bid_info b left join u_user u on b.uid = u.id
+    where loan_id=#{id}-->
+
+  <!--根据用户id查询投资记录,带分页-->
+  <select id="selectBidInfoByUserIdPage" resultMap="BaseResultMap">
+    select b.id, b.loan_id, b.uid, b.bid_money, b.bid_time, b.bid_status, l.product_name
+    from b_bid_info b left join b_loan_info l on b.loan_id = l.id
+    <if test="userId!=null">
+    where uid=#{userId}
+    </if>
+    <if test="start!=null and size!=null">
+      limit #{start},#{size}
+    </if>
+  </select>
+
+  <!--查询用户最近投资记录-->
+  <select id="selectBidInfoByUserId" resultMap="BaseResultMap">
+    select b.id, b.loan_id, b.uid, b.bid_money, b.bid_time, b.bid_status, l.product_name
+    from b_bid_info b left join b_loan_info l on b.loan_id = l.id  where uid=#{userId}
+  </select>
+<!-- select
+    <include refid="Base_Column_List"/>
+    <if test="type!=null">
+    from b_loan_info where product_type = #{type}
+    </if>
+    <if test="start!=null and size!=null">
+      limit #{start},#{size}
+    </if>-->
+  <!--根据用户id查询投资记录总条数-->
+  <select id="selectBidInfoCountByUserId" resultType="Integer">
+    select COUNT(1) from b_bid_info where uid=#{userId}
+  </select>
+</mapper>

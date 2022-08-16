@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.money.mapper.RechargeRecordMapper" >
+  <resultMap id="BaseResultMap" type="entity.RechargeRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="recharge_no" property="rechargeNo" jdbcType="VARCHAR" />
+    <result column="recharge_status" property="rechargeStatus" jdbcType="VARCHAR" />
+    <result column="recharge_money" property="rechargeMoney" jdbcType="DOUBLE" />
+    <result column="recharge_time" property="rechargeTime" jdbcType="TIMESTAMP" />
+    <result column="recharge_desc" property="rechargeDesc" jdbcType="VARCHAR" />
+    <result column="version" property="version"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, recharge_no, recharge_status, recharge_money, recharge_time, recharge_desc ,version
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_recharge_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_recharge_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="entity.RechargeRecord" >
+    insert into b_recharge_record (id, uid, recharge_no, 
+      recharge_status, recharge_money, recharge_time, 
+      recharge_desc)
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{rechargeNo,jdbcType=VARCHAR}, 
+      #{rechargeStatus,jdbcType=VARCHAR}, #{rechargeMoney,jdbcType=DOUBLE}, #{rechargeTime,jdbcType=TIMESTAMP}, 
+      #{rechargeDesc,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="entity.RechargeRecord" >
+    insert into b_recharge_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="rechargeNo != null" >
+        recharge_no,
+      </if>
+      <if test="rechargeStatus != null" >
+        recharge_status,
+      </if>
+      <if test="rechargeMoney != null" >
+        recharge_money,
+      </if>
+      <if test="rechargeTime != null" >
+        recharge_time,
+      </if>
+      <if test="rechargeDesc != null" >
+        recharge_desc,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeNo != null" >
+        #{rechargeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeStatus != null" >
+        #{rechargeStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeMoney != null" >
+        #{rechargeMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="rechargeTime != null" >
+        #{rechargeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rechargeDesc != null" >
+        #{rechargeDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="entity.RechargeRecord" >
+    update b_recharge_record
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeNo != null" >
+        recharge_no = #{rechargeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeStatus != null" >
+        recharge_status = #{rechargeStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeMoney != null" >
+        recharge_money = #{rechargeMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="rechargeTime != null" >
+        recharge_time = #{rechargeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rechargeDesc != null" >
+        recharge_desc = #{rechargeDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="entity.RechargeRecord" >
+    update b_recharge_record
+    set uid = #{uid,jdbcType=INTEGER},
+      recharge_no = #{rechargeNo,jdbcType=VARCHAR},
+      recharge_status = #{rechargeStatus,jdbcType=VARCHAR},
+      recharge_money = #{rechargeMoney,jdbcType=DOUBLE},
+      recharge_time = #{rechargeTime,jdbcType=TIMESTAMP},
+      recharge_desc = #{rechargeDesc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--充值失败，修改订单状态为2-->
+  <update id="updateStatusByRechargeFail">
+    update b_recharge_record set recharge_status=2 where recharge_no = #{rechargeNo}
+  </update>
+
+  <!--根据订单编号，查询充值记录-->
+  <select id="selectRechargeRecordByRechargeNo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from b_recharge_record where recharge_no = #{rechargeNo}
+  </select>
+
+  <!--充值成功，修改订单转态为1-->
+  <update id="updateStatusByRechargeSuccess">
+    update b_recharge_record set recharge_status=1 ,  version=version+1 where recharge_no = #{rechargeNo} and version=#{version}
+  </update>
+
+  <!--以实际支付金额为准，修改订单充值金额-->
+  <update id="updateRechargeMoney">
+    update b_recharge_record set recharge_money=#{total_amount} where recharge_no = #{rechargeNo}
+  </update>
+
+  <!--查询用户投资记录-->
+  <select id="selectRechargeRecordByUserId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from b_recharge_record where uid = #{userId}
+  </select>
+
+  <!--根据订单状态查询订单信息-->
+  <select id="selectRechargeRecordByStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from b_recharge_record where recharge_status = #{status}
+  </select>
+
+  <!--查询用户充值总记录数-->
+  <select id="selectRechargeRecordCount" resultType="Integer">
+    select COUNT(1) from b_recharge_record where uid=#{userId}
+  </select>
+
+  <!--充值订单带分页-->
+  <select id="selectRechargeRecordByPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from b_recharge_record
+    <if test="userId!=null">
+      where uid=#{userId}
+    </if>
+    <if test="start!=null and size!=null">
+      limit #{start},#{size}
+    </if>
+  </select>
+  <!--select b.id, b.loan_id, b.uid, b.bid_money, b.bid_time, b.bid_status, l.product_name
+    from b_bid_info b left join b_loan_info l on b.loan_id = l.id
+    <if test="userId!=null">
+    where uid=#{userId}
+    </if>
+    <if test="start!=null and size!=null">
+      limit #{start},#{size}
+    </if>-->
+</mapper>
